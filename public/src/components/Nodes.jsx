@@ -47,13 +47,10 @@ export default class Nodes extends React.Component {
 	    .attr("height", 1000)
 	    .attr("class","bubble")
 
-		var node = svg.append("g")
-			.attr("class", "nodes")
-	    	.selectAll("circle")
+		var node = svg.selectAll("circle")
 	    	.data(nodes)
 	    	.enter().append("circle")
-	      	.attr("r", 50)
-	      	.attr("fill", function(d) { return "red"; })
+	      	.attr("fill", function(d) { return color(d.cluster); })
 	      	.attr("stroke-width", function(d) { return 10; })
 	      	.attr("stroke", function(d) { return "#aaaaaa"; })
 
