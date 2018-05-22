@@ -1,47 +1,30 @@
 import React from 'react';
-import CropCluster from './CropCluster.jsx';
+import ReactDOM from 'react-dom';
+import Footer from './Footer';
+import ForceLayout from './ForceLayout.jsx';
 import Crop from './Crop.jsx';
+import * as d3 from 'd3';
 
-const styles = {
-	width: 500,
-	height: 500,
-	padding: 60,
-};
-
-//number of data points in the chart.
-const numDataPoints = 50;
-
-//function that returns random number from 0 to 1000
-const randomNum = () => Math.floor(Math.random() * 1000);
-
-//function to create an array of 50 elements of (x, y) coordinates
-const randomDataSet = () => {
-  return Array.apply(null, {length: numDataPoints}).map(() => [randomNum(), randomNum()]);
-}
+/******************************
+CLUSTER FORCE LAYOUT III
+*******************************/
 
 class App extends React.Component {
-	constructor(props) {
-		super(props);
-		this.state = {
-			data: randomDataSet()
-		};
-		const randomizeData = () => {
-			this.setState({
-				data: randomDataSet()
-			});
-		}
-	}
-
 	render() {
 		return (
-			<div className="app-container">
-				<h2>How many bees?</h2>
-				<CropCluster {...this.state} {...styles} />
-				<div className="controls">
-					<button className="btn randomize outline" onClick={() => this.randomizeData()}> Randomize Data 
-					</button>
+			<div>
+			 	<div className="alert alert-ga text-center">
+	          <a href="http://www.jessicarahman.com" target="_blank">
+	              We're teaming up with the World Bee Project to save the bees! Learn more &#11041; </a>
+	      </div>
+	      <div className="title-container">
+					<div className="title"><h2>How many bees?</h2></div>
+					<img src="styles/assets/orangepathway.png" className="beeline"></img>
 				</div>
-				<div id="chart"></div>
+				<div className="app-container">
+				  <ForceLayout />
+				  <Footer />
+				</div>
 			</div>
 		);
 	}

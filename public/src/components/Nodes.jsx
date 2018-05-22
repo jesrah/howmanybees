@@ -1,8 +1,7 @@
 import React from 'react';
 import * as d3 from 'd3';
 import data from '../../../data.json';
-	
-
+import { forceCluster } from 'd3-force-cluster';
 
 export default class Nodes extends React.Component {
 	constructor(props) {
@@ -11,11 +10,11 @@ export default class Nodes extends React.Component {
 
 	componentDidMount() {
 	// const data = this.props.data;
-		const width = 1000;
-		const height = 1000;
+		const width = 900;
+		const height = 900;
 		const padding = 1.5; //separation between same-color nodes
 		const clusterPadding = 6; // separation between different-color nodes
-		const maxRadius = 2 * (data.reduce((max, crop) => {
+		const maxRadius = 3 * (data.reduce((max, crop) => {
 	  	if (max < crop['hivesPerAcre']) {
 	  		max = crop['hivesPerAcre'];
 	  	}	
@@ -33,11 +32,16 @@ export default class Nodes extends React.Component {
 
 		var clusters = new Array(m); //The largest node for each cluster
 
-		var nodes = d3.range(n).map(() => {
+		var nodes = d3.range(n).map(function() {
 		  let i = Math.floor(Math.random() * m),
 		      r = Math.sqrt((i + 1) / m * -Math.log(Math.random())) * maxRadius,
-		      d = {cluster: i, radius: r};
+		      d = {cluster: i, 
+		      		radius: r,
+		      		x: Math.cos(i / m * 2 * Math.PI) * 200 + 960 / 2 + Math.random(),
+        			y: Math.sin(i / m * 2 * Math.PI) * 200 + 500 / 2 + Math.random()
+		      	};
 		  if (!clusters[i] || (r > clusters[i].radius)) clusters[i] = d;
+		  console.log('i, r, d.x, d.y', i, r, d.x, d.y)
 		  return d;
 		});
 
@@ -51,41 +55,38 @@ export default class Nodes extends React.Component {
 	    	.data(nodes)
 	    	.enter().append("circle")
 	      	.attr("fill", function(d) { return color(d.cluster); })
-	      	.attr("stroke-width", function(d) { return 10; })
-	      	.attr("stroke", function(d) { return "#aaaaaa"; })
+	      	.call(d3.drag())
+	      	// .append("text")
+        // .attr("text-anchor", "middle")
+        // .text(function(d){ return data.i; })
+        // .style("fill","white")
+        // .style("font-family", "Helvetica Neue, Helvetica, Arial, san-serif")
+        // .style("font-size", "12px");
 
-	console.log('nodes is', nodes)
-	console.log('svg is', svg)
+	  node.transition()
+	  	.duration(750)
+	  	.delay(function(d, i) { return i * 5; })
+    	.attrTween("r", function(d) {
+      var i = d3.interpolate(0, d.radius);
+      return function(t) { return d.radius = i(t); };
+    });
 
 		var simulation = d3.forceSimulation(nodes)
-		    .velocityDecay(0.2)
 		    .force("x", d3.forceX().strength(.0005))
 		    .force("y", d3.forceY().strength(.0005))
 		    .force("collide", collide)
 		    .force("cluster", clustering)
 		    .on("tick", ticked);
 
-		function ticked() {
-		  circles
-		      .attr("cx", (d) => d.x)
-		      .attr("cy", (d) => d.y);
-		}
-
-	  var circles = svg.selectAll("circle")
-	  .data(nodes)
-		.enter()
-
-	  console.log('circles', circles)
-
 		//These are implementations of the custom forces.
 		function clustering(alpha) {
-		    nodes.forEach(function(d) {
+		   return (function(d) {
 		      var cluster = clusters[d.cluster];
 		      if (cluster === d) return;
 		      var x = d.x - cluster.x,
 		          y = d.y - cluster.y,
 		          l = Math.sqrt(x * x + y * y),
-		          r = d.r + cluster.r;
+		          r = d.radius + cluster.radius;
 		      if (l !== r) {
 		        l = (l - r) / l * alpha;
 		        d.x -= x *= l;
@@ -94,6 +95,12 @@ export default class Nodes extends React.Component {
 		        cluster.y += y;
 		      }  
 		    });
+		}
+
+		function ticked() {
+			if (!node) { return; }
+		  node.attr("cx", (d) => d.x)
+		      .attr("cy", (d) => d.y);
 		}
 
 		function collide(alpha) {
