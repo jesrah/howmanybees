@@ -1,0 +1,140 @@
+html {
+	margin: 0px;
+	padding: 0px;
+}
+
+#app {
+	color: orange;
+}
+
+.app-container {
+	font-family: 'Montserrat', sans-serif;
+	margin: 10px;
+}
+
+.alert {
+	background-color: orange;
+	color: black;
+	border: 0px;
+	padding: 15px 0px;
+	margin-bottom: 20px;
+}
+
+.text-center {
+	text-align: center;
+}
+
+.alert-ga>a {
+	text-decoration: none;
+	font-family: 'Futura';
+	color: white;
+	font-size: 0.82em;
+}
+
+h2 {
+	display: flex;
+	justify-content: center;
+	margin: 10px;
+}
+
+body {
+	/* Background pattern from Toptal Subtle Patterns */
+	background-image: url("assets/round.png");
+	background-repeat: repeat;
+	margin: 0px;
+	padding: 0px;
+
+}
+
+/********************
+CONTROLS
+********************/
+.controls {
+	display: flex;
+	flex-direction: row;
+	justify-content: center;
+}
+
+.btn {
+	padding: 14px 24px;
+	margin: 10px;
+  border: 0 none;
+  border-radius: 4px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+.btn:focus, .btn:active:focus, .btn.active:focus {
+   outline: 0 none;
+}
+ 
+.btn-primary {
+  background: #0099cc;
+  color: #ffffff;
+}
+ 
+.btn-primary:hover, .btn-primary:focus, .btn-primary:active, .btn-primary.active, .open > .dropdown-toggle.btn-primary {
+   background: #33a6cc;
+}
+ 
+.btn-primary:active, .btn-primary.active {
+  background: #007299;
+  box-shadow: none;
+}
+.btn.outline {
+	background: none;
+	padding: 12px 22px;
+	border: 2px solid orange;
+	color: orange;
+}
+
+/********************
+FOOTER
+********************/
+
+footer {
+/*	font-weight: 300;*/
+/*	border: 1px solid red;*/
+	padding-bottom: 10px;
+	margin-bottom: 10px;
+	font-family: 'Futura';
+	color: #808080;
+}
+
+.footer-text {
+	display: flex;
+	justify-content: center;
+	align-items: flex-end;
+/*	font-weight: bold;*/
+	font-size: small;
+	margin: 3px;
+}
+
+.footer-text-tiny {
+	display: flex;
+	justify-content: center;
+	align-items: flex-end;
+/*	margin: 10px 0px 0px 0px;*/
+/*	border: 3px solid orange;*/
+	margin: 0px;
+	font-size: x-small;
+}
+
+.footer-icons {
+	display: flex;
+	justify-content: center;
+}
+
+.social-icons {
+	width: 20px;
+	height: 10px;
+	margin: 0px 5px 5px 10px;
+	fill: #424447;
+}
+
+
+
+.social-icons:hover {
+	color: lightgray;
+}
