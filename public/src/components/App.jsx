@@ -23,7 +23,8 @@ class App extends React.Component {
 				</div>
 				<div className="app-container">
 				  <ForceLayout />
-				  <Footer />
+				</div>
+				<div className="footer-container">
 				</div>
 			</div>
 		);

@@ -3,17 +3,13 @@ html {
 	padding: 0px;
 }
 
-#app {
-	color: orange;
-}
-
-.app-container {
-	font-family: 'Montserrat', sans-serif;
-	margin: 10px;
-}
+/********************
+ALERT
+********************/
 
 .alert {
-	background-color: orange;
+	background-color: #BF5700;
+/*	background-color: #e88d1e;*/
 	color: black;
 	border: 0px;
 	padding: 15px 0px;
@@ -24,25 +20,73 @@ html {
 	text-align: center;
 }
 
-.alert-ga>a {
+a {
 	text-decoration: none;
 	font-family: 'Futura';
 	color: white;
 	font-size: 0.82em;
 }
 
-h2 {
+a:hover, a:focus, a:active {
+	text-decoration: underline dotted;
+}
+
+/********************
+TITLE
+********************/
+
+.title-container {
 	display: flex;
+	flex-direction: row;
 	justify-content: center;
+	font-family: 'Montserrat';
+}
+
+.title {
+/*	display: flex;
+	justify-content: center;*/
+	float: right;
+	margin: 10px 0px 10px 10px;
+}
+
+.beeline {
+	float: left;
+	width: 50%;
+	height: 50%;
+	max-width: 316px;
+
+}
+
+/********************
+APP
+********************/
+
+#app {
+	color: orange;
+}
+
+.app-container {
+	display: flex;
+	align-items: column;
+	font-family: 'Montserrat', sans-serif;
 	margin: 10px;
 }
 
 body {
 	/* Background pattern from Toptal Subtle Patterns */
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
 	background-image: url("assets/round.png");
 	background-repeat: repeat;
 	margin: 0px;
 	padding: 0px;
+}
+
+svg.bubble {
+	text-align: center;
+	padding: 10px;
+	margin: 10px;
 
 }
 
@@ -96,6 +140,8 @@ FOOTER
 footer {
 /*	font-weight: 300;*/
 /*	border: 1px solid red;*/
+	display: flex;
+	justify-content: center;
 	padding-bottom: 10px;
 	margin-bottom: 10px;
 	font-family: 'Futura';
@@ -114,7 +160,6 @@ footer {
 .footer-text-tiny {
 	display: flex;
 	justify-content: center;
-	align-items: flex-end;
 /*	margin: 10px 0px 0px 0px;*/
 /*	border: 3px solid orange;*/
 	margin: 0px;
@@ -132,8 +177,6 @@ footer {
 	margin: 0px 5px 5px 10px;
 	fill: #424447;
 }
-
-
 
 .social-icons:hover {
 	color: lightgray;
