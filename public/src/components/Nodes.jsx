@@ -1,6 +1,5 @@
 import React from 'react';
 import * as d3 from 'd3';
-import data from '../../../data.json';
 import { forceCluster } from 'd3-force-cluster';
 
 export default class Nodes extends React.Component {
@@ -9,9 +8,12 @@ export default class Nodes extends React.Component {
 	}
 
 	componentDidMount() {
-	// const data = this.props.data;
+		const data = this.props.data;
+
+		console.log('data is', data);
+		console.log('this is', this);
 		const width = 900;
-		const height = 900;
+		const height = 600;
 		const padding = 1.5; //separation between same-color nodes
 		const clusterPadding = 6; // separation between different-color nodes
 		const maxRadius = 3 * (data.reduce((max, crop) => {
@@ -41,16 +43,17 @@ export default class Nodes extends React.Component {
         			y: Math.sin(i / m * 2 * Math.PI) * 200 + 500 / 2 + Math.random()
 		      	};
 		  if (!clusters[i] || (r > clusters[i].radius)) clusters[i] = d;
-		  console.log('i, r, d.x, d.y', i, r, d.x, d.y)
+		  console.log('d is', d)
 		  return d;
 		});
 
 		var svg = d3.select('body')
 			.append("svg")
 	    .attr("width", 1000)
-	    .attr("height", 1000)
+	    .attr("height", 850)
 	    .attr("class","bubble")
 
+console.log()
 		var node = svg.selectAll("circle")
 	    	.data(nodes)
 	    	.enter().append("circle")
@@ -58,23 +61,33 @@ export default class Nodes extends React.Component {
 	      	.call(d3.drag())
 	      	// .append("text")
         // .attr("text-anchor", "middle")
-        // .text(function(d){ return data.i; })
+        // .text(function(d){ return data[`${d.index}`].name })
         // .style("fill","white")
         // .style("font-family", "Helvetica Neue, Helvetica, Arial, san-serif")
         // .style("font-size", "12px");
 
+    // node.append('text')
+    // 	.text((d) => data[d.index].name )
+    // 	.attr("dx", -10)
+    // 	.text((d) => nodes[d.index].name)
+    // 	.style("stroke", "white")
+
 	  node.transition()
-	  	.duration(750)
+	  	.duration(1500)
 	  	.delay(function(d, i) { return i * 5; })
     	.attrTween("r", function(d) {
       var i = d3.interpolate(0, d.radius);
       return function(t) { return d.radius = i(t); };
     });
 
+    	console.log(nodes)
+
 		var simulation = d3.forceSimulation(nodes)
 		    .force("x", d3.forceX().strength(.0005))
 		    .force("y", d3.forceY().strength(.0005))
-		    .force("collide", collide)
+				.force('collide', d3.forceCollide(function (d) { return d.r + padding; })
+				    .strength(0))
+		    .force("collide", d3.forceCollide().radius(function(d) {return d.radius + 0.5}).iterations(1.5))
 		    .force("cluster", clustering)
 		    .on("tick", ticked);
 
@@ -110,18 +123,21 @@ export default class Nodes extends React.Component {
 		      .addAll(nodes);
 
 		  nodes.forEach(function(d) {
-		    var r = d.r + maxRadius + Math.max(padding, clusterPadding),
+		    var r = d.radius + Math.max(padding, clusterPadding),
 		        nx1 = d.x - r,
 		        nx2 = d.x + r,
 		        ny1 = d.y - r,
 		        ny2 = d.y + r;
+		    console.log()
 		    quadtree.visit(function(quad, x1, y1, x2, y2) {
-
+		    	if (quad.data === undefined) {
+		    		return;
+		    	}
 		      if (quad.data && (quad.data !== d)) {
 		        var x = d.x - quad.data.x,
 		            y = d.y - quad.data.y,
 		            l = Math.sqrt(x * x + y * y),
-		            r = d.r + quad.data.r + (d.cluster === quad.data.cluster ? padding : clusterPadding);
+		            r = d.radius + quad.data.r + (d.cluster === quad.data.cluster ? padding : clusterPadding);
 		        if (l < r) {
 		          l = (l - r) / l * alpha;
 		          d.x -= x *= l;
@@ -141,6 +157,7 @@ export default class Nodes extends React.Component {
 		<div>
 			<div ref="hook" />
 		</div>
+
 		);
 	}
 }
