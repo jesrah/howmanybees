@@ -12,18 +12,21 @@ export default class Nodes extends React.Component {
 
 		console.log('data is', data);
 		console.log('this is', this);
-		const width = 960;
-		const height = 700;
-		const padding = 1.5; //separation between same-colorScale nodes
-		const clusterPadding = 6; // separation between different-color nodes
-		const radiusMultiplier = 6;
-		const maxRadius = radiusMultiplier * (data.reduce((max, crop) => {
+		
+		const width = 900,
+					height = 700,
+					padding = 1.5, //separation between same-colorScale nodes
+					clusterPadding = 4, // separation between different-color nodes
+					radiusMultiplier = 6,
+					maxRadius = radiusMultiplier * (data.reduce((max, crop) => {
 	  	if (max < crop['hivesPerAcre']) {
 	  		max = crop['hivesPerAcre'];
 	  	}	
 	  	return max;
 	  }, 0));
+	  
 	  var n = data.length //total number of nodes
+		
 		var m = data.reduce((uniqueGroups, crop) => {
 		    	if (uniqueGroups.indexOf(crop['groupId']) === -1) {
 		    		uniqueGroups.push(crop['groupId']);
@@ -41,31 +44,40 @@ export default class Nodes extends React.Component {
 		      d = {cluster: i, 
 		      		radius: r,
 		      		x: Math.cos(i / m * 2 * Math.PI) * 200 + width / 2 + Math.random(),
-        			y: Math.sin(i / m * 2 * Math.PI) * 200 + height / 2 + Math.random()
+        			y: Math.sin(i / m * 2 * Math.PI) * 200 + height / 2 + Math.random(),
+        			name: "clover"
 		      	};
 		  if (!clusters[i] || (r > clusters[i].radius)) clusters[i] = d;
 		  console.log('d is', d)
 		  return d;
 		});
 
-		var svg = d3.select('body')
-			.append("svg")
+		var svg = d3.select('body').append("svg")
 	    .attr("width", width)
 	    .attr("height", height)
 	    .attr("class","bubble")
 
-console.log()
+		// var node = svg.selectAll("circle")
+	 //    	.data(nodes)
+	 //    	.enter().append("circle")
+	 //      	.attr("fill", function(d) { return colorScale(d.cluster); })
+	 //      	.call(d3.drag())
+
 		var node = svg.selectAll("circle")
 	    	.data(nodes)
-	    	.enter().append("circle")
-	      	.attr("fill", function(d) { return colorScale(d.cluster); })
-	      	.call(d3.drag())
-	      	// .append("text")
-        // .attr("text-anchor", "middle")
-        // .text(function(d){ return data[`${d.index}`].name })
-        // .style("fill","white")
-        // .style("font-family", "Helvetica Neue, Helvetica, Arial, san-serif")
-        // .style("font-size", "12px");
+	    	.enter().append("g")
+	    	.call(d3.drag())
+
+  	node.append("circle")
+    	.attr("fill", function(d) { return colorScale(d.cluster); })
+    	.attr("r", function(d){return d.radius})
+
+		node.append("text")
+    	.attr("fill", function(d) { return colorScale(d.cluster); })
+    	.attr("dx", -10)
+    	.attr("dy", ".35em")
+    	.text(function (d) { return d.name })
+    	.style("stroke", "white");
 
     // node.append('text')
     // 	.text((d) => data[d.index].name )
@@ -114,8 +126,10 @@ console.log()
 
 		function ticked() {
 			if (!node) { return; }
-		  node.attr("cx", (d) => d.x)
-		      .attr("cy", (d) => d.y);
+		  node.attr("transform", function (d) {
+        var k = "translate(" + d.x + "," + d.y + ")";
+        return k;
+    	})
 		}
 
 		function collide(alpha) {
