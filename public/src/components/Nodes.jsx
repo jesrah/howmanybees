@@ -12,11 +12,12 @@ export default class Nodes extends React.Component {
 
 		console.log('data is', data);
 		console.log('this is', this);
-		const width = 900;
-		const height = 600;
-		const padding = 1.5; //separation between same-color nodes
+		const width = 960;
+		const height = 700;
+		const padding = 1.5; //separation between same-colorScale nodes
 		const clusterPadding = 6; // separation between different-color nodes
-		const maxRadius = 3 * (data.reduce((max, crop) => {
+		const radiusMultiplier = 6;
+		const maxRadius = radiusMultiplier * (data.reduce((max, crop) => {
 	  	if (max < crop['hivesPerAcre']) {
 	  		max = crop['hivesPerAcre'];
 	  	}	
@@ -30,7 +31,7 @@ export default class Nodes extends React.Component {
 		    	return uniqueGroups;
 		    }, []).length;
 
-		var color = d3.scaleOrdinal().range(["#FDEB73", "#F6C15B", "#ED9445", "#E66632", "#B84A29", "#6A3A2D"]);
+		var colorScale = d3.scaleOrdinal().range(["#FDEB73", "#F6C15B", "#ED9445", "#E66632", "#B84A29", "#6A3A2D"]);
 
 		var clusters = new Array(m); //The largest node for each cluster
 
@@ -39,8 +40,8 @@ export default class Nodes extends React.Component {
 		      r = Math.sqrt((i + 1) / m * -Math.log(Math.random())) * maxRadius,
 		      d = {cluster: i, 
 		      		radius: r,
-		      		x: Math.cos(i / m * 2 * Math.PI) * 200 + 960 / 2 + Math.random(),
-        			y: Math.sin(i / m * 2 * Math.PI) * 200 + 500 / 2 + Math.random()
+		      		x: Math.cos(i / m * 2 * Math.PI) * 200 + width / 2 + Math.random(),
+        			y: Math.sin(i / m * 2 * Math.PI) * 200 + height / 2 + Math.random()
 		      	};
 		  if (!clusters[i] || (r > clusters[i].radius)) clusters[i] = d;
 		  console.log('d is', d)
@@ -49,15 +50,15 @@ export default class Nodes extends React.Component {
 
 		var svg = d3.select('body')
 			.append("svg")
-	    .attr("width", 1000)
-	    .attr("height", 850)
+	    .attr("width", width)
+	    .attr("height", height)
 	    .attr("class","bubble")
 
 console.log()
 		var node = svg.selectAll("circle")
 	    	.data(nodes)
 	    	.enter().append("circle")
-	      	.attr("fill", function(d) { return color(d.cluster); })
+	      	.attr("fill", function(d) { return colorScale(d.cluster); })
 	      	.call(d3.drag())
 	      	// .append("text")
         // .attr("text-anchor", "middle")
@@ -81,13 +82,14 @@ console.log()
     });
 
     	console.log(nodes)
-
+//first force collision function only works if strength > 0
+//second force collision function is necessary to get the circles to not render on top of each other
 		var simulation = d3.forceSimulation(nodes)
 		    .force("x", d3.forceX().strength(.0005))
 		    .force("y", d3.forceY().strength(.0005))
-				.force('collide', d3.forceCollide(function (d) { return d.r + padding; })
-				    .strength(0))
-		    .force("collide", d3.forceCollide().radius(function(d) {return d.radius + 0.5}).iterations(1.5))
+				.force('collide', d3.forceCollide(function (d) { return d.radius + padding; })
+				    .strength(0.3))
+		    // .force("collide", d3.forceCollide().radius(function(d) {return d.radius + 0.5}).iterations(1.5))
 		    .force("cluster", clustering)
 		    .on("tick", ticked);
 
