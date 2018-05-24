@@ -12,17 +12,21 @@ export default class Nodes extends React.Component {
 
 		console.log('data is', data);
 		console.log('this is', this);
-		const width = 900;
-		const height = 600;
-		const padding = 1.5; //separation between same-color nodes
-		const clusterPadding = 6; // separation between different-color nodes
-		const maxRadius = 3 * (data.reduce((max, crop) => {
+		
+		const width = 900,
+					height = 700,
+					padding = 1.5, //separation between same-colorScale nodes
+					clusterPadding = 4, // separation between different-color nodes
+					radiusMultiplier = 6,
+					maxRadius = radiusMultiplier * (data.reduce((max, crop) => {
 	  	if (max < crop['hivesPerAcre']) {
 	  		max = crop['hivesPerAcre'];
 	  	}	
 	  	return max;
 	  }, 0));
+	  
 	  var n = data.length //total number of nodes
+		
 		var m = data.reduce((uniqueGroups, crop) => {
 		    	if (uniqueGroups.indexOf(crop['groupId']) === -1) {
 		    		uniqueGroups.push(crop['groupId']);
@@ -30,7 +34,7 @@ export default class Nodes extends React.Component {
 		    	return uniqueGroups;
 		    }, []).length;
 
-		var color = d3.scaleOrdinal().range(["#FDEB73", "#F6C15B", "#ED9445", "#E66632", "#B84A29", "#6A3A2D"]);
+		var colorScale = d3.scaleOrdinal().range(["#FDEB73", "#F6C15B", "#ED9445", "#E66632", "#B84A29", "#6A3A2D"]);
 
 		var clusters = new Array(m); //The largest node for each cluster
 
@@ -39,32 +43,43 @@ export default class Nodes extends React.Component {
 		      r = Math.sqrt((i + 1) / m * -Math.log(Math.random())) * maxRadius,
 		      d = {cluster: i, 
 		      		radius: r,
-		      		x: Math.cos(i / m * 2 * Math.PI) * 200 + 960 / 2 + Math.random(),
-        			y: Math.sin(i / m * 2 * Math.PI) * 200 + 500 / 2 + Math.random()
+		      		x: Math.cos(i / m * 2 * Math.PI) * 200 + width / 2 + Math.random(),
+        			y: Math.sin(i / m * 2 * Math.PI) * 200 + height / 2 + Math.random(),
+        			name: "almond"
 		      	};
 		  if (!clusters[i] || (r > clusters[i].radius)) clusters[i] = d;
 		  console.log('d is', d)
 		  return d;
 		});
 
-		var svg = d3.select('body')
-			.append("svg")
-	    .attr("width", 1000)
-	    .attr("height", 850)
+		var svg = d3.select('body').append("svg")
+	    .attr("width", width)
+	    .attr("height", height)
 	    .attr("class","bubble")
 
-console.log()
+		// var node = svg.selectAll("circle")
+	 //    	.data(nodes)
+	 //    	.enter().append("circle")
+	 //      	.attr("fill", function(d) { return colorScale(d.cluster); })
+	 //      	.call(d3.drag())
+
 		var node = svg.selectAll("circle")
 	    	.data(nodes)
-	    	.enter().append("circle")
-	      	.attr("fill", function(d) { return color(d.cluster); })
-	      	.call(d3.drag())
-	      	// .append("text")
-        // .attr("text-anchor", "middle")
-        // .text(function(d){ return data[`${d.index}`].name })
-        // .style("fill","white")
-        // .style("font-family", "Helvetica Neue, Helvetica, Arial, san-serif")
-        // .style("font-size", "12px");
+	    	.enter().append("g")
+	    	.call(d3.drag())
+
+  	node.append("circle")
+    	.attr("fill", function(d) { return colorScale(d.cluster); })
+    	.attr("r", function(d) { return d.radius })
+
+//perhaps make this appear on hover
+		node.append("text")
+    	.attr("dx", -10)
+    	.attr("dy", ".35em")
+    	.text((d) => d.name )
+    	.attr("class", "node-text")
+    	.attr("fill", (d) => colorScale(d.cluster))
+    	// .style("stroke", "black")
 
     // node.append('text')
     // 	.text((d) => data[d.index].name )
@@ -74,20 +89,21 @@ console.log()
 
 	  node.transition()
 	  	.duration(1500)
-	  	.delay(function(d, i) { return i * 5; })
-    	.attrTween("r", function(d) {
+	  	.delay((d, i) => i * 5)
+    	.attrTween("r", (d) => {
       var i = d3.interpolate(0, d.radius);
       return function(t) { return d.radius = i(t); };
     });
 
     	console.log(nodes)
-
+//first force collision function only works if strength > 0
+//second force collision function is necessary to get the circles to not render on top of each other
 		var simulation = d3.forceSimulation(nodes)
 		    .force("x", d3.forceX().strength(.0005))
 		    .force("y", d3.forceY().strength(.0005))
-				.force('collide', d3.forceCollide(function (d) { return d.r + padding; })
-				    .strength(0))
-		    .force("collide", d3.forceCollide().radius(function(d) {return d.radius + 0.5}).iterations(1.5))
+				.force('collide', d3.forceCollide(function (d) { return d.radius + padding; })
+				    .strength(0.3))
+		    // .force("collide", d3.forceCollide().radius(function(d) {return d.radius + 0.5}).iterations(1.5))
 		    .force("cluster", clustering)
 		    .on("tick", ticked);
 
@@ -112,8 +128,10 @@ console.log()
 
 		function ticked() {
 			if (!node) { return; }
-		  node.attr("cx", (d) => d.x)
-		      .attr("cy", (d) => d.y);
+		  node.attr("transform", function (d) {
+        var k = "translate(" + d.x + "," + d.y + ")";
+        return k;
+    	})
 		}
 
 		function collide(alpha) {
@@ -150,14 +168,25 @@ console.log()
 		    });
 		  });
 		};
-	}
+
+		function mouseOver(d) {
+			this.parentNode.appendChild(this);
+		  d3.select(this)
+		      .style("pointer-events", "none")
+		    .transition()
+		      .duration(750)
+		      .attr("transform", "translate(480,480)scale(23)rotate(180)")
+		    .transition()
+		      .delay(1500)
+		      .attr("transform", "translate(240,240)scale(0)")
+		      .style("fill-opacity", 0)
+		      .remove();		
+    }
+	};
 
 	render() {
 		return (
-		<div>
-			<div ref="hook" />
-		</div>
-
+		<div></div>
 		);
 	}
 }

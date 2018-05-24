@@ -1,5 +1,5 @@
+const webpack = require('webpack');
 const path = require('path');
-const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 // Constant with our paths
 var SRC_DIR = path.join(__dirname, '/public/src');
@@ -13,11 +13,11 @@ module.exports = {
     filename: 'bundle.js',
   },
   // Tell webpack to use html plugin
-  plugins: [
-    new HtmlWebpackPlugin({
-      template: path.join(__dirname, 'index.html'),
-    }),
-  ],
+  // plugins: [
+  //   new HtmlWebpackPlugin({
+  //     template: path.join(__dirname, 'index.html'),
+  //   }),
+  // ],
   module: {
     rules: [
       {
@@ -32,4 +32,9 @@ module.exports = {
   resolve: {
     extensions: ['.js', '.jsx'],
   },
+   externals: {
+    'react/addons': true, // important!!
+    'react/lib/ReactContext': true,
+    'react/lib/ExecutionEnvironment': true
+  }
 };

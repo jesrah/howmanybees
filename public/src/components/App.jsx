@@ -13,7 +13,7 @@ class App extends React.Component {
 	render() {
 		return (
 			<div>
-			 	<div className="alert alert-ga text-center">
+			 	<div className="banner alert-ga text-center">
 	          <a href="http://www.jessicarahman.com" target="_blank">
 	              We're teaming up with the World Bee Project to save the bees! Learn more &#11041; </a>
 	      </div>
