@@ -70,14 +70,16 @@ export default class Nodes extends React.Component {
 
   	node.append("circle")
     	.attr("fill", function(d) { return colorScale(d.cluster); })
-    	.attr("r", function(d){return d.radius})
+    	// .attr("r", function(d){return d.radius})
 
+//perhaps make this appear on hover
 		node.append("text")
     	.attr("fill", function(d) { return colorScale(d.cluster); })
     	.attr("dx", -10)
     	.attr("dy", ".35em")
     	.text(function (d) { return d.name })
-    	.style("stroke", "white");
+    	.attr("class", "node-text")
+    	.style("stroke", function(d) { return colorScale(d.cluster); });
 
     // node.append('text')
     // 	.text((d) => data[d.index].name )
