@@ -45,7 +45,7 @@ export default class Nodes extends React.Component {
 		      		radius: r,
 		      		x: Math.cos(i / m * 2 * Math.PI) * 200 + width / 2 + Math.random(),
         			y: Math.sin(i / m * 2 * Math.PI) * 200 + height / 2 + Math.random(),
-        			name: "clover"
+        			name: "almond"
 		      	};
 		  if (!clusters[i] || (r > clusters[i].radius)) clusters[i] = d;
 		  console.log('d is', d)
@@ -70,16 +70,16 @@ export default class Nodes extends React.Component {
 
   	node.append("circle")
     	.attr("fill", function(d) { return colorScale(d.cluster); })
-    	// .attr("r", function(d){return d.radius})
+    	.attr("r", function(d) { return d.radius })
 
 //perhaps make this appear on hover
 		node.append("text")
-    	.attr("fill", function(d) { return colorScale(d.cluster); })
     	.attr("dx", -10)
     	.attr("dy", ".35em")
-    	.text(function (d) { return d.name })
+    	.text((d) => d.name )
     	.attr("class", "node-text")
-    	.style("stroke", function(d) { return colorScale(d.cluster); });
+    	.attr("fill", (d) => colorScale(d.cluster))
+    	// .style("stroke", "black")
 
     // node.append('text')
     // 	.text((d) => data[d.index].name )
@@ -89,8 +89,8 @@ export default class Nodes extends React.Component {
 
 	  node.transition()
 	  	.duration(1500)
-	  	.delay(function(d, i) { return i * 5; })
-    	.attrTween("r", function(d) {
+	  	.delay((d, i) => i * 5)
+    	.attrTween("r", (d) => {
       var i = d3.interpolate(0, d.radius);
       return function(t) { return d.radius = i(t); };
     });
@@ -168,14 +168,25 @@ export default class Nodes extends React.Component {
 		    });
 		  });
 		};
-	}
+
+		function mouseOver(d) {
+			this.parentNode.appendChild(this);
+		  d3.select(this)
+		      .style("pointer-events", "none")
+		    .transition()
+		      .duration(750)
+		      .attr("transform", "translate(480,480)scale(23)rotate(180)")
+		    .transition()
+		      .delay(1500)
+		      .attr("transform", "translate(240,240)scale(0)")
+		      .style("fill-opacity", 0)
+		      .remove();		
+    }
+	};
 
 	render() {
 		return (
-		<div>
-			<div ref="hook" />
-		</div>
-
+		<div></div>
 		);
 	}
 }

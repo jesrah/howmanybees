@@ -83,6 +83,7 @@ body {
 	background-image: url("assets/round.png");
 	background-repeat: repeat;
 	margin: 0px;
+	padding: 0px;
 }
 
 svg.bubble {
@@ -90,6 +91,13 @@ svg.bubble {
 	text-align: center;
 	padding: 10px;
 	margin: 10px;
+}
+
+.node-text {
+	color: black;
+  font-family: 'Futura', sans-serif;
+/*  stroke: black;*/
+  fill: black;
 }
 
 /********************
